@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Title of the webpage -->
+    <title>YouTube Video on Blockchain</title>
+
+    <!-- Styling for the webpage -->
+   <style>
+        /* Styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://wallpapers.com/images/high/dark-youtube-logo-on-black-background-2qkg0pi9xc8jiaix.webp') center/cover, rgba(0, 0, 0, 0.7); /* Background image and black semi-transparent background */
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            height: 100vh; /* Full-screen height */
+            overflow: hidden; /* Hide overflowing content */
+            display: flex;
+            flex-direction: column; /* Adjust the alignment for top-center */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Styling for the animated text container */
+        .animated-text-container {
+            position: relative; /* To allow for absolute positioning within it */
+        }
+
+        /* Styling for "Add a Video" text and "YOUR VIDEO SAVES FOREVER!" */
+        .add-a-video, .saves-forever {
+            font-size: 4em; /* Font size for both texts */
+            font-weight: bold; /* Make the font bold */
+            color: #fff; /* White text color */
+            text-shadow: 4px 4px 0 #000; /* Black outline (dark text shadow) */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; /* Font family */
+        }
+
+        /* Styling for "YOUWEB3.0" text */
+        .youweb-text {
+            font-size: 6em; /* Increased font size by 1.5 times */
+            font-weight: bold; /* Make it bold */
+            color: #ff5722; /* A unique color for the logo text */
+            text-transform: uppercase; /* Uppercase the text */
+            letter-spacing: 6px; /* Increase letter spacing for a logo-like appearance */
+            background: linear-gradient(to right, #FF5722, #E040FB); /* Gradient background */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent; /* Make the text transparent to show the background */
+            display: inline-block;
+        }
+
+        .animated-text {
+            position: absolute;
+            top: 50px; /* Position at the top */
+            left: 50%; /* Center the text horizontally */
+            transform: translateX(-50%); /* Center the text horizontally */
+            animation: splash 1s ease-in-out infinite alternate; /* Splash animation */
+        }
+
+        /* Styling for the video ID input container */
+        .video-id-container {
+            margin-top: 40vh; /* Move 40% down from the top for alignment below the center */
+        }
+
+        /* Styling for the video ID input field */
+        .video-id-input {
+            font-size: 24px; /* Decrease the font size by 1.5 times */
+            padding: 20px; /* Increase the padding for the field */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 80%; /* Increase the width to make the input field larger */
+            margin: 0 auto 20px auto; /* Add margin to create space below and match the input and button sizes */
+        }
+
+        /* Styling for the submit button */
+        .submit-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 20px; /* Match the padding to the input field */
+            border-radius: 8px; /* Match the border radius to the input field */
+            cursor: pointer;
+            font-size: 24px; /* Match the font size to the input field */
+            width: 80%; /* Increase the width to match the input field size */
+            margin: 0 auto; /* Center horizontally */
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.52); /* Overlay color with transparency */
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="animated-text-container">
+    <div class="youweb-text">YOUWEB3.0</div>
+    <div class="add-a-video">Add a Video</div>
+    <div class="saves-forever">YOUR VIDEO SAVES FOREVER!</div>
+</div>
+
+<div class="video-id-container">
+    <input type="text" class="video-id-input" placeholder="Enter YouTube Video ID">
+    <br> <!-- Add a line break to create space below the input field -->
+    <button class="submit-button">Submit</button>
+</div>
+<!-- Include Web3.js from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+
+    <!-- JavaScript code -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                // Initialize Web3 with the current provider (MetaMask)
+                window.web3 = new Web3(window.ethereum);
+
+                try {
+                    // Request account access from the user
+                    await window.ethereum.enable();
+                } catch (error) {
+                    console.error('User denied account access');
+                }
+
+                // Define your smart contract address and ABI
+                const contractAddress = '0xd9145CCE52D386f254917e481eB44e9943F39138';
+                const contractAbi = [
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "string",
+                                "name": "videoLink",
+                                "type": "string"
+                            }
+                        ],
+                        "name": "VideoAdded",
+                        "type": "event"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "string",
+                                "name": "_videoLink",
+                                "type": "string"
+                            }
+                        ],
+                        "name": "addVideo",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "getVideoLink",
+                        "outputs": [
+                            {
+                                "internalType": "string",
+                                "name": "",
+                                "type": "string"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "owner",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "videoLink",
+                        "outputs": [
+                            {
+                                "internalType": "string",
+                                "name": "",
+                                "type": "string"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
+                ];
+
+                // Create a contract instance
+                const contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+                // Add an event listener to the "Add Video" button
+                const addVideoButton = document.getElementById('addVideoButton');
+                addVideoButton.addEventListener('click', async () => {
+                    const videoId = document.getElementById('videoId').value;
+                    
+                    // Call the smart contract's addVideo function to save the video link
+                    try {
+                        const accounts = await web3.eth.getAccounts();
+                        await contract.methods.addVideo(videoId).send({ from: accounts[0] });
+                        
+                        // Display the status message
+                        const statusMessage = document.getElementById('statusMessage');
+                        statusMessage.textContent = `Video saved to the blockchain with ID: ${videoId}`;
+                    } catch (error) {
+                        console.error('Error saving video to the blockchain:', error);
+                        
+                        // Display an error message
+                        const statusMessage = document.getElementById('statusMessage');
+                        statusMessage.textContent = 'Error saving video to the blockchain';
+                    }
+                });
+
+                // Retrieve the video link from the contract
+                const videoLink = await contract.methods.getVideoLink().call();
+                const videoLinkElement = document.getElementById('videoLink');
+                videoLinkElement.textContent = `Video Link: ${videoLink}`;
+            } else {
+                console.log('No web3 provider detected. Please install MetaMask or another Ethereum wallet.');
+            }
+        });
+    </script>
+</body>
+</html>
